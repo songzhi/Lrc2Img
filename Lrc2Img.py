@@ -120,12 +120,21 @@ class Img():
 
 
         return
+
+    def is_chinese(self,uchar):
+        """判断一个unicode是否是汉字"""
+        if uchar >= u'\u4e00' and uchar <= u'\u9fa5':
+            return True
+        else:
+            return False
     def getsize(self,lrc):
+
         lrc=lrc.split('\n')
         width = []
         for line in lrc:
             width.append(len(line))
         width = max(width)
+
         self.fontSize = 500//width-1  # 字体大小
         fontSpace = 10 # 每行间隔大小
 
@@ -142,8 +151,17 @@ class Img():
         import requests
         width, length = self.getsize(lrc)
         from PIL import Image, ImageDraw, ImageFont
+        isChinese=False
+        for char in name:
+            if self.is_chinese(char):
+                isChinese=True
+        if not isChinese:
+            self.fontSize=int(self.fontSize*2.5)
+            length*=2
         albumImgSize=500#专辑缩略图大小
         font="MFShangHei_Noncommercial-Regular.otf"
+        
+
         fontSize=self.fontSize#字体大小
         fontSpace=10#每行间隔大小
         space=10#留白
@@ -154,7 +172,7 @@ class Img():
         rSizeImg=albumImg.resize((albumImgSize,albumImgSize),resample=3)
 
         x=albumImgSize
-        y=albumImgSize+length+space*4
+        y=albumImgSize+length+space*8
         outImg=Image.new(mode='RGB', size=(x, y), color=(255, 255, 255))
         draw= ImageDraw.Draw(outImg)
         outImg.paste(rSizeImg,(0,0))
