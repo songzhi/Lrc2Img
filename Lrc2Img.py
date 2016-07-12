@@ -1,17 +1,12 @@
+# -*- coding: UTF-8 -*-
 import json
 import requests
 class NetEase():
-    
-    
-    
-    
-    
-
 
     cookies_filename = "netease_cookies.json"
 
     def __init__(self):
-        super().__init__()
+#         super().__init__()
         self.headers = {
             'Host': 'music.163.com',
             'Connection': 'keep-alive',
@@ -74,7 +69,7 @@ class NetEase():
     def get_lyric_by_musicid(self, mid):
 
         url = 'http://music.163.com/api/song/lyric?' + 'id=' + str(mid) + '&lv=1&kv=1&tv=-1'
-        return self.http_request('GET', url)
+        return self.http_request('POST', url) #此API必须使用POST方式才能正确返回，否则提示“illegal request”
 
 class Playlist():
     def __init__(self,uid):
@@ -148,8 +143,7 @@ class Img():
 
     def save(self,name,lrc,imgurl):
         from io import BytesIO
-        import requests
-        width, length = self.getsize(lrc)
+        width,length = self.getsize(lrc)
         from PIL import Image, ImageDraw, ImageFont
         isChinese=False
         for char in name:
@@ -159,7 +153,7 @@ class Img():
             self.fontSize=int(self.fontSize*2.5)
             length*=2
         albumImgSize=500#专辑缩略图大小
-        font="MFShangHei_Noncommercial-Regular.otf"
+        font="C:\\MFShangHei_Noncommercial-Regular.otf" #需要把字体下载到本地，并且提供其路径
         
 
         fontSize=self.fontSize#字体大小
@@ -178,7 +172,8 @@ class Img():
         outImg.paste(rSizeImg,(0,0))
 
         draw.text((space*2,albumImgSize+space*2),lrc,font=font,fill=(0,0,0),spacing=fontSpace,align='left')
-        draw.text((space*2, y-80),'——'+name,fill=(0,0,0),font=font,align='left')
+        # Python中字符串类型分为byte string 和 unicode string两种，'——'为中文标点byte string，需转换为unicode string
+        draw.text((space*2, y-60),unicode('——', "utf-8")+name,fill=(0,0,0),font=font,align="left")
         outImg.save(self.Path+r'\\'+name+'.bmp')
 
         return
